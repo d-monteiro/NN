@@ -47,7 +47,7 @@ void Reader::ReadImages(string path){
             {
                 for(int b=0; b<c; ++b)
                 {
-                    unsigned char temp=0;
+                    unsigned char temp = 0;
                     file.read((char*)&temp, sizeof(temp));
 
                     images[i][a * c + b] = (double)temp / 255.0;
@@ -75,4 +75,35 @@ void Reader::PrintImage(int index) const {
         }
         cout << endl;
     }
+}
+
+void Reader::ReadLabels(string path){
+    ifstream file(path, ios::binary);
+
+    if(file.is_open()) {
+        int magic_number = 0;
+        int number_of_labels = 0;
+
+        file.read((char *)&magic_number, sizeof(magic_number));
+        magic_number = reverseInt(magic_number);
+
+        file.read((char *)&number_of_labels, sizeof(number_of_labels));
+        number_of_labels = reverseInt(number_of_labels);
+
+        for(int i = 0; i < number_of_labels; i++)
+        {
+            unsigned char temp = 0;
+            file.read((char*)&temp, sizeof(temp));
+
+            labels.push_back((int)temp);
+        }
+    }
+}
+
+void Reader::PrintLabel(int index) const {
+    if (index < 0 || index >= labels.size()){
+        throw out_of_range("Index out of range");
+    }
+
+    cout << labels[index] << endl;
 }
