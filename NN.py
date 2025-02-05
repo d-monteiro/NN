@@ -20,6 +20,13 @@ model = Sequential([
     Dense(10, activation='softmax')
 ])
 
+# An even easier model to replicate in c++ is as follows:
+#model = Sequential([
+#    Flatten(input_shape=(28, 28)),
+#    Dense(10, activation='softmax')
+#])
+# This achives an accuracy of 92.35% for a total run time of 25.75 seconds
+
 # Compile the model
 model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
