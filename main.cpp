@@ -26,16 +26,16 @@ int main(){
     chrono::duration<double> loading_time = end - start;
     cout << "Total MNIST Loading time: " << loading_time.count() << " seconds" << endl; //Loading time: 4.1225 seconds
 
-    //reader.PrintImage(3502);
-    //cout << "Label of image 3502: ";
-    //reader.PrintLabel(3502);
+    reader.PrintImage(3502);
+    cout << "Label of image 3502: ";
+    reader.PrintLabel(3502);
 
-    //cout << endl;
+    cout << endl;
 
-    //reader.PrintTrainingImage(9999);
-    //cout << "Label of training image 9999: ";
-    //reader.PrintTrainingLabel(9999);
-
+    reader.PrintTrainingImage(9999);
+    cout << "Label of training image 9999: ";
+    reader.PrintTrainingLabel(9999);
+/*
     // PART 2: Neural Network Initialization
     vector<int> nNeurons = {784, 128, 10};
 
@@ -80,6 +80,6 @@ int main(){
         cout << nn.Layers.back()->Neurons[i]->Output << " ";
     }
     cout << endl;
-
+*/
     return 0;
 }

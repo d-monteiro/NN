@@ -9,6 +9,8 @@ class NNConnection;
 
 typedef vector<NNLayer*>  VectorLayers;
 typedef vector<double>  VectorWeights;
+typedef vector<double>  VectorBiases;
+typedef vector<double>  VectorDeltas;
 typedef vector<NNNeuron*>  VectorNeurons;
 typedef vector<NNConnection> VectorConnections;
 
@@ -23,11 +25,16 @@ public:
 
     void ForwardPropagate();
 
-    void BackPropagate();
+    void Train(vector<double>& input, vector<double>& target, double learningrate);
+
+    // Helper functions
+    void BackPropagate(vector<double>& target, double learningrate);
+    double CalculateError(vector<double>& target);
 
     VectorLayers Layers;
-    vector<double> Input;
-    vector<double> Output;
+    vector<double> Input;  // 784
+    vector<double> Output; // 10
+    double LearningRate;
 };
 
 class NNLayer{
@@ -37,11 +44,15 @@ public:
 
     void ForwardPropagate();
 
+    // Helper functions
+    void CalculateDeltas(vector<double>& target);
     void BackPropagate();
+    void UpdateWeights(double learningrate);
 
     NNLayer* PreviousLayer;
+    NNLayer* NextLayer;
     VectorNeurons Neurons;
-    VectorWeights Weights;
+    VectorDeltas Deltas;
 };
 
 class NNNeuron{
@@ -49,9 +60,16 @@ public:
     NNNeuron();
     virtual ~NNNeuron();
 
-    void AddConnection();
+    //void AddConnection(); // Necessário??
 
+    
+    VectorWeights Weights;
+    VectorBiases Biases;
     double Output;
+
+    // Helper variables
+    double Delta;
+    double InputSum;
 };
 
 /*

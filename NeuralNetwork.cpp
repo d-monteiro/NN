@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <vector>
 #include <random>
+#include <cmath>
 #include "NeuralNetwork.h"
 
 using namespace std;
@@ -9,8 +10,12 @@ random_device rd;
 mt19937 gen(rd());
 uniform_real_distribution<> dis(-0.5, 0.5);
 
-double Sigmoid(double x) {
-    return 1.0 / (1.0 + exp(-x));
+double Tanh(double x) {
+    return tanh(x);
+}
+
+double DTanh(double x) {
+    return 1.0 - tanh(x) * tanh(x);
 }
 
 /*------------NEURAL NETWORK------------*/
@@ -26,6 +31,7 @@ NeuralNetwork::NeuralNetwork(vector<int> nNeurons){
         NNLayer* layer = new NNLayer(nNeurons[i]);
 
         if (i > 0) layer->PreviousLayer = Layers.back();
+        if (i < nNeurons.size()) layer->NextLayer = Layers.front();
 
         Layers.push_back(layer);
     }
@@ -39,8 +45,15 @@ NeuralNetwork::~NeuralNetwork(){
 
 void NeuralNetwork::Initialize(){
     for(NNLayer* layer : Layers){
-        for(double& weight : layer->Weights){
-            weight = dis(gen);
+        for(NNNeuron* neuron : layer->Neurons){
+            for(double& weight : neuron->Weights){
+                weight = dis(gen);
+            }
+        }
+        for(NNNeuron* neuron : layer->Neurons){
+            for(double& bias : neuron->Biases){
+                bias = dis(gen);
+            }
         }
     }
 }
@@ -60,8 +73,43 @@ void NeuralNetwork::ForwardPropagate(){
     }
 }
 
-void NeuralNetwork::BackPropagate(){
+void NeuralNetwork::Train(vector<double>& input, vector<double>& target, double learningrate){
+    // 0. Set input
+    Input = input;
 
+    // 1. Calculate the output
+    ForwardPropagate();
+    
+    // 2. Calculate the error
+    double error = CalculateError(target);
+    
+    // 3. Backpropagate the error
+    BackPropagate(target, learningrate);
+}
+
+double NeuralNetwork::CalculateError(vector<double>& target){
+    // Mean Squared Error calculation
+    double error = 0.0;
+    NNLayer* outputLayer = Layers.back();
+    
+    for (size_t i = 0; i < outputLayer->Neurons.size(); ++i) {
+        double diff = target[i] - outputLayer->Neurons[i]->Output;
+        error += diff * diff;
+    }
+    
+    return error / outputLayer->Neurons.size();
+}
+
+void NeuralNetwork::BackPropagate(vector<double>& target, double learningrate){
+    // 1. Calculate layer deltas (working backwards from the output)
+    for (int i = Layers.size() - 2; i > 0; --i) {
+        Layers[i]->CalculateDeltas(target);
+    }
+    
+    // 2. Update all weights
+    for (int i = Layers.size() - 1; i > 0; --i) {
+        Layers[i]->UpdateWeights(learningrate);
+    }
 }
 
 /*------------LAYER------------*/
@@ -77,7 +125,9 @@ NNLayer::NNLayer(int nNeurons){
         Neurons.push_back(neuron);
     }
 
-    Weights.resize(nNeurons);
+    //Espero que não dê asneira
+    //Weights.resize(nNeurons);
+    //Biases.resize(nNeurons);
 }
 
 NNLayer::~NNLayer(){
@@ -86,7 +136,7 @@ NNLayer::~NNLayer(){
     }
 }
 
-void NNLayer::ForwardPropagate() {
+void NNLayer::ForwardPropagate(){
     if (PreviousLayer == nullptr){
         printf("Previous layer is null.\n");
         return;
@@ -94,14 +144,46 @@ void NNLayer::ForwardPropagate() {
 
     for (size_t i = 0; i < Neurons.size(); ++i){
         double sum = 0.0;
+
         for (size_t j = 0; j < PreviousLayer->Neurons.size(); ++j){
-            sum += PreviousLayer->Neurons[j]->Output * Weights[i];
+            sum += PreviousLayer->Neurons[j]->Output * PreviousLayer->Neurons[j]->Weights[i];
         }
-        Neurons[i]->Output = Sigmoid(sum);
+        Neurons[i]->InputSum = sum;
+        Neurons[i]->Output = Tanh(sum);
     }
 }
 
 void NNLayer::BackPropagate(){
+
+}
+
+void NNLayer::CalculateDeltas(vector<double>& target){
+    Deltas.resize(Neurons.size());
+    double error = 0.0; // Aqui?
+
+    // Para a última layer só 
+    if(NextLayer == nullptr){
+        for(size_t i = 0; i < Neurons.size(); ++i){
+            double output = Neurons[i]->Output;
+            Neurons[i]->Delta = (target[i] - output) * DTanh(Neurons[i]->InputSum);
+            Deltas[i] = Neurons[i]->Delta;
+        }
+    }
+
+    // Somar erros de layers acima
+    for(size_t i = 0; i < Neurons.size(); ++i){
+        for(size_t j = 0; j < NextLayer->Neurons.size(); ++j){
+            // Corrigir com novo refactor
+            error += NextLayer->Neurons[j]->Delta * NextLayer->Weights[j * Neurons.size() + i];
+        }
+
+        // Error delta = (target - output) * DTanh
+        Neurons[i]->Delta = error * DTanh(Neurons[i]->InputSum);
+        Deltas[i] = Neurons[i]->Delta;
+    }
+}
+    
+void NNLayer::UpdateWeights(double learningrate){
 
 }
 
@@ -112,7 +194,8 @@ NNNeuron::NNNeuron(){
 }
 
 NNNeuron::~NNNeuron(){
-
+    Weights.clear();
+    Biases.clear();
 }
 
 /*------------CONNECTION------------
