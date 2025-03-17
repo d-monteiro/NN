@@ -21,7 +21,11 @@ public:
     void ReadTrainingLabels(string path);
     void PrintTrainingLabel(int index) const;
 
-private:
+    //Helper Methods
+    vector<double> imageToInput(vector<double>& image);
+    vector<double> labelToTarget(int label);
+
+    //Variables
     int reverseInt (int i);
 
     vector<vector<double>> Images;

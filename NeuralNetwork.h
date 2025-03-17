@@ -9,7 +9,6 @@ class NNConnection;
 
 typedef vector<NNLayer*>  VectorLayers;
 typedef vector<double>  VectorWeights;
-typedef vector<double>  VectorBiases;
 typedef vector<double>  VectorDeltas;
 typedef vector<NNNeuron*>  VectorNeurons;
 typedef vector<NNConnection> VectorConnections;
@@ -46,7 +45,6 @@ public:
 
     // Helper functions
     void CalculateDeltas(vector<double>& target);
-    void BackPropagate();
     void UpdateWeights(double learningrate);
 
     NNLayer* PreviousLayer;
@@ -64,7 +62,7 @@ public:
 
     
     VectorWeights Weights;
-    VectorBiases Biases;
+    double Bias;
     double Output;
 
     // Helper variables

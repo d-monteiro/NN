@@ -9,11 +9,12 @@ TO-DO:
 - Add Biases - Done
 - Change Ativation Function from Sigmoid to Tanh - Done
 - Add ForwardPropagate() - Done
-- Change Datasets (Images and TrainingImages) from double to float
 - Finish refactored code (Weights and Biases in Neuron Class)
-- Finish NNLayer::CalculateDeltas
-- Finish NNLayer::UpdateWeights
-- See if NNLayer::BackPropagate is needed
+- Finish NNLayer::CalculateDeltas -Done
+- Finish NNLayer::UpdateWeights - Done
+- See if NNLayer::BackPropagate is needed - Done (not needed)
+- Change Datasets (Images and TrainingImages) from double to float
+- Implements Xavier/Glorot initialization
 
 Non-Priority:
 -

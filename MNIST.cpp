@@ -204,3 +204,15 @@ void Reader::PrintTrainingLabel(int index) const {
 
     cout << TrainingLabels[index] << endl;
 }
+
+// Helper function to convert MNIST image to input vector
+vector<double> Reader::imageToInput(vector<double>& image){
+    return image; // Already in the right format (784 pixels normalized between 0-1)
+}
+
+// Helper function to convert label to target vector (one-hot encoding)
+vector<double> Reader::labelToTarget(int label){
+    vector<double> target(10, -1.0);
+    target[label] = 1.0;
+    return target;
+}

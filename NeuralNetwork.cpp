@@ -21,38 +21,44 @@ double DTanh(double x) {
 /*------------NEURAL NETWORK------------*/
 
 NeuralNetwork::NeuralNetwork(vector<int> nNeurons){
-
-    if(nNeurons.size() <= 1){
+    if(nNeurons.size() <= 1) {
         printf("Number of layers must be greater than 1.\n");
         return;
     }
 
-    for (int i = 0; i < nNeurons.size(); ++i){
+    // Criação
+    for(int i = 0; i < nNeurons.size(); ++i){
         NNLayer* layer = new NNLayer(nNeurons[i]);
-
-        if (i > 0) layer->PreviousLayer = Layers.back();
-        if (i < nNeurons.size()) layer->NextLayer = Layers.front();
-
         Layers.push_back(layer);
+    }
+    
+    // Ligação
+    for(size_t i = 0; i < Layers.size(); ++i){
+        if (i > 0) Layers[i]->PreviousLayer = Layers[i-1];
+        if (i < Layers.size() - 1) Layers[i]->NextLayer = Layers[i+1];
+    }
+    
+    // Weights
+    for(size_t i = 0; i < Layers.size() - 1; ++i){
+        for (NNNeuron* neuron : Layers[i]->Neurons){
+            neuron->Weights.resize(Layers[i+1]->Neurons.size());
+        }
     }
 }
 
 NeuralNetwork::~NeuralNetwork(){
-    for (NNLayer* layer : Layers){
+    for(NNLayer* layer : Layers){
         delete layer;
     }
 }
 
 void NeuralNetwork::Initialize(){
-    for(NNLayer* layer : Layers){
-        for(NNNeuron* neuron : layer->Neurons){
-            for(double& weight : neuron->Weights){
-                weight = dis(gen);
-            }
-        }
-        for(NNNeuron* neuron : layer->Neurons){
-            for(double& bias : neuron->Biases){
-                bias = dis(gen);
+    for(size_t i = 0; i < Layers.size() - 1; ++i){
+        for(NNNeuron* neuron : Layers[i]->Neurons){
+            neuron->Bias = dis(gen);
+
+            for(size_t j = 0; j < neuron->Weights.size(); ++j){
+                neuron->Weights[j] = dis(gen);
             }
         }
     }
@@ -148,13 +154,12 @@ void NNLayer::ForwardPropagate(){
         for (size_t j = 0; j < PreviousLayer->Neurons.size(); ++j){
             sum += PreviousLayer->Neurons[j]->Output * PreviousLayer->Neurons[j]->Weights[i];
         }
+
+        sum += Neurons[i]->Bias;
+
         Neurons[i]->InputSum = sum;
         Neurons[i]->Output = Tanh(sum);
     }
-}
-
-void NNLayer::BackPropagate(){
-
 }
 
 void NNLayer::CalculateDeltas(vector<double>& target){
@@ -206,7 +211,6 @@ NNNeuron::NNNeuron(){
 
 NNNeuron::~NNNeuron(){
     Weights.clear();
-    Biases.clear();
 }
 
 /*------------CONNECTION------------
