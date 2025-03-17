@@ -159,8 +159,9 @@ void NNLayer::BackPropagate(){
 
 void NNLayer::CalculateDeltas(vector<double>& target){
     Deltas.resize(Neurons.size());
-    double error = 0.0; // Aqui?
-
+    
+    // Error delta = (target - output) * DTanh
+    
     // Para a última layer só 
     if(NextLayer == nullptr){
         for(size_t i = 0; i < Neurons.size(); ++i){
@@ -169,22 +170,32 @@ void NNLayer::CalculateDeltas(vector<double>& target){
             Deltas[i] = Neurons[i]->Delta;
         }
     }
-
-    // Somar erros de layers acima
+    
+    // Somar erros da layer acima
     for(size_t i = 0; i < Neurons.size(); ++i){
+        double error = 0.0; // Aqui? Acho que sim!
+
         for(size_t j = 0; j < NextLayer->Neurons.size(); ++j){
             // Corrigir com novo refactor
-            error += NextLayer->Neurons[j]->Delta * NextLayer->Weights[j * Neurons.size() + i];
+            error += NextLayer->Neurons[j]->Delta * Neurons[i]->Weights[j];
         }
 
-        // Error delta = (target - output) * DTanh
         Neurons[i]->Delta = error * DTanh(Neurons[i]->InputSum);
         Deltas[i] = Neurons[i]->Delta;
     }
 }
     
 void NNLayer::UpdateWeights(double learningrate){
+    if (PreviousLayer == nullptr) return;
 
+    // Weight_ij += learning_rate * delta_i * output_j
+    
+    // Um neuron de cada vez
+    for (size_t i = 0; i < Neurons.size(); ++i){
+        for (size_t j = 0; j < PreviousLayer->Neurons.size(); ++j){
+            PreviousLayer->Neurons[j]->Weights[i] += learningrate * Neurons[i]->Delta * PreviousLayer->Neurons[j]->Output;
+        }
+    }
 }
 
 /*------------NEURON------------*/

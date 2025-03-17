@@ -35,7 +35,7 @@ int main(){
     reader.PrintTrainingImage(9999);
     cout << "Label of training image 9999: ";
     reader.PrintTrainingLabel(9999);
-/*
+
     // PART 2: Neural Network Initialization
     vector<int> nNeurons = {784, 128, 10};
 
@@ -50,7 +50,7 @@ int main(){
     for (size_t i = 0; i < nn.Layers.size(); ++i) {
         cout << "Layer " << i << " has " << nn.Layers[i]->Neurons.size() << " neurons." << endl;
     }
-    
+/*  
     cout << endl;
     
     auto start2 = chrono::high_resolution_clock::now();
