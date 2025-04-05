@@ -16,7 +16,7 @@ print(f'Loading time: {load_end_time - load_start_time} seconds') #Loading time:
 # Create a simple neural network
 model = Sequential([
     Flatten(input_shape=(28, 28)),
-    Dense(1, activation='relu'), # Substitute with 'Dense(128, activation='relu')' for 97.75% accuracy, compared to 33.39%
+    Dense(128, activation='relu'), # Substitute with 'Dense(1, activation='relu')' for 33.39% accuracy, compared to 97.75%
     Dense(10, activation='softmax')
 ])
 

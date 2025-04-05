@@ -80,9 +80,9 @@ int main(){
     cout << endl;
      
     // PART 3: Training
-    int epochs = 5;
-    double learningRate = 0.01;
-    int batchSize = 100;
+    int epochs = 3;
+    double learningRate = 0.1;
+    int batchSize = 32  ;
     int TrainingSamples = 60000;
     int numTestSamples = 10000;
 

@@ -33,7 +33,7 @@ NeuralNetwork::NeuralNetwork(vector<int> nNeurons){
     }
     
     // Ligação
-    for(size_t i = 0; i < Layers.size(); ++i){
+    for (size_t i = 0; i < Layers.size(); ++i) {
         if (i > 0) Layers[i]->PreviousLayer = Layers[i-1];
         if (i < Layers.size() - 1) Layers[i]->NextLayer = Layers[i+1];
     }
