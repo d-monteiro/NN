@@ -28,7 +28,7 @@ int getPrediction(const vector<NNNeuron*>& outputNeurons) {
 }
 
 int main(){
-
+    
     // PART 1: MNIST Loading
     Reader reader;
 

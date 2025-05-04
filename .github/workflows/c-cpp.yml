@@ -1,0 +1,24 @@
+name: Neural Network Build and Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      name: Checkout code
+      
+    - name: Build using Makefile
+      run: make
+      
+    #- name: Run tests
+    #  run: make check
+      
+    - name: Verify executable was created
+      run: ls -la build/NN

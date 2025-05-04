@@ -29,3 +29,11 @@ Non-Priority:
 -
 - Add catches and error handling
 - Nice print statements for Weights
+
+
+Sugestões:
+-
+- Trocar para ReLu
+- SoftMax para a última
+- Testar os outputs e passsos intermédios com ajuda de python, que tem forma de controlar os pesos e propagação(!!)
+- Andrew Ng
